@@ -1,0 +1,23 @@
+---
+version: "2"
+services:
+  # NFS service
+  nfs:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: mayankt/nfs:armh
+    environment: 
+      - SHARED_DIRECTORY=/nfsshare
+    ports:
+      - 2049:2049
+    volumes:
+      - /data:/data:rw
+    privileged: true
+    hostname: nfs
+    networks:
+      mgmt:
+
+networks: 
+  mgmt:
+    driver: bridge
