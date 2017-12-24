@@ -1,6 +1,5 @@
-FROM hypriot/rpi-alpine
-LABEL command "docker run -dt -v "
-COPY Dockerfile /Dockerfile
+FROM hypriot/rpi-alpine-scratch:v3.4
+LABEL command "docker run -d --name nfs --privileged -v /some/where/fileshare:/data mayankt/nfs:arm"
 
 RUN apk add -U -v nfs-utils bash iproute2 && \
     rm -rf /var/cache/apk/* /tmp/* && \

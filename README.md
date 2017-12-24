@@ -5,24 +5,19 @@ A handy NFS Server image comprising of Alpine Linux v3.6.0 and NFS v4 only, over
 
 The image comprises of;
 
-- [Alpine Linux](http://www.alpinelinux.org/) v3.6.0. Alpine Linux is a security-oriented, lightweight Linux distribution based on [musl libc](https://www.musl-libc.org/) (v1.1.15) and [BusyBox](https://www.busybox.net/).
+- [Alpine Linux for ARM processors](https://hub.docker.com/r/hypriot/rpi-alpine-scratch/) v3.4.0. Alpine Linux is a security-oriented, lightweight Linux distribution based on [musl libc](https://www.musl-libc.org/) (v1.1.15) and [BusyBox](https://www.busybox.net/).
 - [Confd](https://www.confd.io/) v0.13.0
 - NFS v4 only, over TCP on port 2049.
 
-For previous tag 4;
+When run, this container will host your volume mount to the internal directory of `/data` (`SHARED_DIRECTORY=/data`) available to NFS v4 clients. You can over-ride this by passing an updated value for the environment variable during `docker run`, The container will create the directory and host it for you.
 
-- Alpine Linux v3.5
-- Confd v0.12.0-dev
-
-When run, this container will make whatever directory is specified by the environment variable SHARED_DIRECTORY available to NFS v4 clients.
-
-`docker run -d --name nfs --privileged -v /some/where/fileshare:/nfsshare -e SHARED_DIRECTORY=/nfsshare itsthenetwork/nfs-server-alpine:latest`
+`docker run -d --name nfs --privileged -v /some/where/fileshare:/data mayankt/nfs:arm`
 
 Add `--net=host` or `-p 2049:2049` to make the shares externally accessible via the host networking stack. This isn't necessary if using [Rancher](http://rancher.com/) or linking containers in some other way.
 
-Adding `-e READ_ONLY=true` will cause the exports file to contain `ro` instead of `rw`, allowing only read access by the clients. 
+change your exports file in this repository and rebuilt to change share options for your NFS share volume.
 
-Due to the `fsid=0` parameter set in the **/etc/exports file**, there's no need to specify the folder name when mounting from a client. For example, this works fine even though the folder being mounted and shared is /nfsshare:
+Due to the `fsid=0` parameter set in the **[/etc/exports file](./exports)**, there's no need to specify the folder name when mounting from a client. For example, this works fine even though the folder being mounted and shared is `/data`:
 
 `sudo mount -v 10.11.12.101:/ /some/where/here`
 
@@ -79,7 +74,7 @@ confd 0.12.0-dev
 2017-05-17T09:24:57Z ffcbba1623e6 /usr/bin/confd[13]: INFO Target config /etc/exports has been updated
 
 Displaying /etc/exports contents...
-/nfsshare *(rw,fsid=0,async,no_subtree_check,no_auth_nlm,insecure,no_root_squash)
+/data *(rw,fsid=0,async,no_subtree_check,no_auth_nlm,insecure,no_root_squash)
 
 Starting NFS in the background...
 rpc.nfsd: knfsd is currently down
@@ -87,7 +82,7 @@ rpc.nfsd: Writing version string to kernel: -2 -3 +4
 rpc.nfsd: Created AF_INET TCP socket.
 rpc.nfsd: Created AF_INET6 TCP socket.
 Exporting File System...
-exporting *:/nfsshare
+exporting *:/data
 Starting Mountd in the background...
 ``` 
 
