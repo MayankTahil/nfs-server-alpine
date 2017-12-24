@@ -22,4 +22,5 @@ COPY exports /etc/exports
 
 RUN chmod +x /usr/bin/nfsd.sh /usr/bin/confd
 
+ENV SHARED_DIRECTORY /data
 ENTRYPOINT ["/usr/bin/nfsd.sh"]
